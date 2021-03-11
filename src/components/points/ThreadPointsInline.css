@@ -1,0 +1,16 @@
+.threadpointsinline-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    color: var(--point-color);
+    font-size: var(--sm-med-font-size);
+    text-align: center;
+}
+
+.threadpointsinline-item-btn {
+    cursor: pointer;
+    margin-left: .5em;
+    margin-right: .5em;
+    position: relative;
+}

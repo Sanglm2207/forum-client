@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../../.."
+		},
+		{
+			"path": "../../../../../../nodep/forum-server"
+		}
+	],
+	"settings": {
+	}
+}
