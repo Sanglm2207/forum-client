@@ -1,4 +1,3 @@
-import { parseISO } from "date-fns";
 import React, { FC, useEffect, useState } from "react";
 import ThreadItem from "../../../models/ThreadItem";
 import ThreadResponse from "./ThreadResponse";
@@ -21,7 +20,6 @@ const ThreadResponsesBuilder: FC<ThreadResponsesBuilderProps> = ({
   useEffect(() => {
     if (threadItems) {
       const thResponses = threadItems.map((ti) => {
-        console.log("parse timezone", parseISO(ti.createdOn.toString()));
         return (
           <li key={`thr-${ti.id}`}>
             <ThreadResponse

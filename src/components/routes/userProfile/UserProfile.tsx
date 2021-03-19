@@ -7,7 +7,6 @@ import { AppState } from "../../../store/AppState";
 import Nav from "../../areas/Nav";
 import PasswordComparison from "../../auth/common/PasswordComparison";
 import userReducer from "../../auth/common/UserReducer";
-import { getTextFromNodes } from "../../editor/RichEditor";
 import "./UserProfile.css";
 
 const ChangePassword = gql`
@@ -33,9 +32,6 @@ const UserProfile = () => {
   const [threads, setThreads] = useState<JSX.Element | undefined>();
   const [threadItems, setThreadItems] = useState<JSX.Element | undefined>();
   const [execChangePassword] = useMutation(ChangePassword);
-  const getRespBody = (strNodes: string) => {
-    return getTextFromNodes(JSON.parse(strNodes));
-  };
 
   useEffect(() => {
     if (user) {
@@ -54,13 +50,13 @@ const UserProfile = () => {
         );
       });
       setThreads(
-        !user.threadItems || user.threadItems.length === 0 ? undefined : (
+        !user.threads || user.threads.length === 0 ? undefined : (
           <ul>{threadList}</ul>
         )
       );
 
       const threadItemList = user.threadItems?.map((ti: any) => {
-        const body = getRespBody(ti.body);
+        const body = ti.body;
         return (
           <li key={`user-ti-${ti.id}`}>
             <Link to={`/thread/${ti.thread?.id}`} className="userprofile-link">

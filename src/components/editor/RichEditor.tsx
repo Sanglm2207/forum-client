@@ -35,7 +35,7 @@ const initialValue = [
 ];
 const LIST_TYPES = ["numbered-list", "bulleted-list"];
 
-class RichEditorProps {
+export class RichEditorProps {
   existingBody?: string;
   readOnly?: boolean = false;
   sendOutBody?: (body: Node[]) => void;

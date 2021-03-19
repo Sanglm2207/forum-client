@@ -45,12 +45,14 @@ function App() {
   const renderUserProfile = (props: any) => <UserProfile {...props} />;
 
   return (
-    <Switch>
-      <Route exact={true} path="/" render={renderHome} />
-      <Route path="/categorythreads/:categoryId" render={renderHome} />
-      <Route path="/thread/:id?" render={renderThread} />
-      <Route path="/userprofile/:id" render={renderUserProfile} />
-    </Switch>
+    <>
+      <Switch>
+        <Route exact={true} path="/" render={renderHome} />
+        <Route path="/categorythreads/:categoryId" render={renderHome} />
+        <Route path="/thread/:id?" render={renderThread} />
+        <Route path="/userprofile/:id" render={renderUserProfile} />
+      </Switch>
+    </>
   );
 }
 

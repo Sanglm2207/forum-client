@@ -30,7 +30,7 @@
   color: var(--proceed-color);
   font-weight: bold;
   word-wrap: break-word;
-  overflow: auto;
+  /* overflow: auto; */
   line-height: 10px;
   margin-top: 0.5em;
 }
@@ -39,8 +39,15 @@
   color: var(--point-color);
   font-size: var(--sm-med-font-size);
   text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .content-header {
   margin-bottom: .5em;
+}
+
+.threadcard-body .rc-md-editor {
+  height: auto !important;
+  max-height: 500px ;
 }

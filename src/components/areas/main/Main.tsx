@@ -66,10 +66,16 @@ const GetThreadsLatest = gql`
 
 const Main = () => {
   const [execGetThreadsByCat, { data: threadsByCatData }] = useLazyQuery(
-    GetThreadsByCategoryId
+    GetThreadsByCategoryId,
+    {
+      fetchPolicy: "no-cache",
+    }
   );
   const [execGetThreadsLatest, { data: threadsLatestData }] = useLazyQuery(
-    GetThreadsLatest
+    GetThreadsLatest,
+    {
+      fetchPolicy: "no-cache",
+    }
   );
 
   const { categoryId } = useParams<{ categoryId: string }>();

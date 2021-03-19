@@ -17,13 +17,12 @@ const useUpdateThreadPoint = (
   ) => {
     e.preventDefault();
 
-    const result = await execUpdateThreadPoint({
+    await execUpdateThreadPoint({
       variables: {
         threadId,
         increment: true,
       },
     });
-    console.log("useUpdateThreadPoint: ", result);
     refreshThread && refreshThread();
   };
 

@@ -2,12 +2,12 @@ import React, { FC } from "react";
 import "./ThreadCard.css";
 import Thread from "../../../models/Thread";
 import { Link, useHistory } from "react-router-dom";
-import { faEye, faReplyAll } from "@fortawesome/free-solid-svg-icons";
+import { faReplyAll } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
 import ThreadPointsBar from "../../points/ThreadPointsBar";
 import ThreadPointsInline from "../../points/ThreadPointsInline";
-import RichEditor from "../../editor/RichEditor";
+import MDEditor from "../../editor2/MarkdownEditor";
 
 interface ThreadCardProps {
   thread: Thread;
@@ -62,17 +62,17 @@ const ThreadCard: FC<ThreadCardProps> = ({ thread }) => {
             onClick={onClickShowThread}
             data-thread-id={thread.id}
           >
-            <RichEditor existingBody={thread.body} readOnly={true} />
+            <MDEditor existingBody={thread.body} readOnly={true} />
           </div>
           <div className="threadcard-footer">
-            <span
+            {/* <span
               style={{
                 marginRight: ".5em",
               }}
             >
               {thread.views}
               <FontAwesomeIcon icon={faEye} className="icon-lg" />
-            </span>
+            </span> */}
             {width <= 768 ? (
               <ThreadPointsInline points={thread?.points || 0} />
             ) : null}

@@ -1,11 +1,16 @@
 import React, { FC } from "react";
-import RichEditor from "../../editor/RichEditor";
-import { Node } from "slate";
+import MDEditor from "../../editor2/MarkdownEditor";
 
 interface ThreadBodyProps {
   body?: string;
   readOnly: boolean;
-  sendOutBody: (body: Node[]) => void;
+  sendOutBody?: (
+    data: {
+      text: string;
+      html: string;
+    },
+    event?: React.ChangeEvent<HTMLTextAreaElement>
+  ) => void;
 }
 
 const ThreadBody: FC<ThreadBodyProps> = ({ body, readOnly, sendOutBody }) => {
@@ -13,7 +18,7 @@ const ThreadBody: FC<ThreadBodyProps> = ({ body, readOnly, sendOutBody }) => {
     <div className="thread-body-container">
       <strong>Body</strong>
       <div className="thread-body-editor">
-        <RichEditor
+        <MDEditor
           existingBody={body}
           readOnly={readOnly}
           sendOutBody={sendOutBody}

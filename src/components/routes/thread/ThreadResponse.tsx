@@ -1,9 +1,8 @@
 import React, { FC, useEffect, useState } from "react";
-import RichEditor from "../../editor/RichEditor";
+import MDEditor from "../../editor2/MarkdownEditor";
 import UserNameAndTime from "./UserNameAndTime";
 import ThreadPointsInline from "../../points/ThreadPointsInline";
 import { gql, useMutation } from "@apollo/client";
-import { Node } from "slate";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../store/AppState";
 import { parseISO } from "date-fns";
@@ -44,7 +43,7 @@ const ThreadResponse: FC<ThreadResponseProps> = ({
 
   useEffect(() => {
     if (body) {
-      setBodyToSave(body || "");
+      setBodyToSave(body);
     }
   }, [body]);
 
@@ -53,32 +52,32 @@ const ThreadResponse: FC<ThreadResponseProps> = ({
   ) => {
     e.preventDefault();
 
-    if (!user) {
+    if (!(user && user.id)) {
       setPostMsg("Please login before adding a response.");
     } else if (!threadId) {
       setPostMsg("A parent thread must exist before a response can be posted.");
     } else if (!bodyToSave) {
       setPostMsg("Please enter some text.");
     } else {
-      await execCreateThreadItem({
+      const res = await execCreateThreadItem({
         variables: {
-          userId: user ? user.id : "0",
+          userId: user.id,
           threadId,
           body: bodyToSave,
         },
       });
-      refreshThread && refreshThread();
+      if (isNaN(res.data.createThreadItem.messages[0])) {
+        setPostMsg(res.data.createThreadItem.messages[0]);
+      } else {
+        refreshThread && refreshThread();
+      }
     }
   };
 
-  const receiveBody = (body: Node[]) => {
-    const newBody = JSON.stringify(body);
-    if (bodyToSave !== newBody) {
-      setBodyToSave(newBody);
-    }
+  const receiveBody = (data: { text: string; html: string }) => {
+    setBodyToSave(data.text);
   };
 
-  console.log("lastModifiedOn", lastModifiedOn);
   let modifiedOn: Date | undefined;
   if (lastModifiedOn) {
     modifiedOn = parseISO(lastModifiedOn.toString());
@@ -99,8 +98,8 @@ const ThreadResponse: FC<ThreadResponseProps> = ({
           </span>
         ) : null}
       </div>
-      <div className="thread-body-editor">
-        <RichEditor
+      <div className="thread-response-body">
+        <MDEditor
           existingBody={bodyToSave}
           readOnly={readOnly}
           sendOutBody={receiveBody}

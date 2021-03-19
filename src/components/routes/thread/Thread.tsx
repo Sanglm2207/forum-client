@@ -1,24 +1,22 @@
-import React, { useEffect, useReducer, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import "./Thread.css";
-import ThreadHeader from "./ThreadHeader";
-import ThreadCategory from "./ThreadCategory";
-import ThreadTitle from "./ThreadTitle";
-import ThreadModel from "../../../models/Thread";
-import Nav from "../../areas/Nav";
-import ThreadBody from "./ThreadBody";
-import ThreadResponsesBuilder from "./ThreadResponsesBuilder";
-import ThreadPointsBar from "../../points/ThreadPointsBar";
-import ThreadResponse from "./ThreadResponse";
-import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
-import { AppState } from "../../../store/AppState";
-import { useSelector } from "react-redux";
-import Category from "../../../models/Category";
-import { getTextFromNodes } from "../../editor/RichEditor";
-import { Node } from "slate";
-import ThreadPointsInline from "../../points/ThreadPointsInline";
 import { parseISO } from "date-fns";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
+import { useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router-dom";
+import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
+import Category from "../../../models/Category";
+import ThreadModel from "../../../models/Thread";
+import { AppState } from "../../../store/AppState";
+import Nav from "../../areas/Nav";
+import ThreadPointsBar from "../../points/ThreadPointsBar";
+import ThreadPointsInline from "../../points/ThreadPointsInline";
+import "./Thread.css";
+import ThreadBody from "./ThreadBody";
+import ThreadCategory from "./ThreadCategory";
+import ThreadHeader from "./ThreadHeader";
+import ThreadResponse from "./ThreadResponse";
+import ThreadResponsesBuilder from "./ThreadResponsesBuilder";
+import ThreadTitle from "./ThreadTitle";
 
 //TODO: if need, you should put the gql schema in some files
 const GetThreadById = gql`
@@ -89,8 +87,6 @@ const threadReducer = (state: any, action: any) => {
       return { ...state, title: action.payload };
     case "body":
       return { ...state, body: action.payload };
-    case "bodyNode":
-      return { ...state, bodyNode: action.payload };
     default:
       throw new Error("Unknown action type");
   }
@@ -106,39 +102,33 @@ const Thread = () => {
   const [thread, setThread] = useState<ThreadModel | undefined>();
   const [readOnly, setReadOnly] = useState(false);
   const user = useSelector((state: AppState) => state.user);
-  const [
-    { userId, category, title, bodyNode },
-    threadReducerDispatch,
-  ] = useReducer(threadReducer, {
-    userId: user ? user.id : "0",
-    category: undefined,
-    title: "",
-    body: "",
-    bodyNode: undefined,
-  });
+  const [{ userId, category, title, body }, threadReducerDispatch] = useReducer(
+    threadReducer,
+    {
+      userId: user ? user.id : "0",
+      category: undefined,
+      title: "",
+      body: "",
+    }
+  );
+
   const [postMsg, setPostMsg] = useState("");
   const [execCreateThread] = useMutation(CreateThread);
   const history = useHistory();
 
-  const refreshThread = () => {
+  const refreshThread = useCallback(async () => {
     if (id && parseInt(id) > 0) {
-      execGetThreadById({
-        variables: {
-          id,
-        },
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (id && parseInt(id) > 0) {
-      execGetThreadById({
+      await execGetThreadById({
         variables: {
           id,
         },
       });
     }
   }, [id, execGetThreadById]);
+
+  useEffect(() => {
+    refreshThread();
+  }, [refreshThread]);
 
   useEffect(() => {
     threadReducerDispatch({
@@ -174,14 +164,10 @@ const Thread = () => {
     });
   };
 
-  const receiveBody = (body: Node[]) => {
-    threadReducerDispatch({
-      type: "bodyNode",
-      payload: body,
-    });
+  const receiveBody = (data: { text: string }) => {
     threadReducerDispatch({
       type: "body",
-      payload: getTextFromNodes(body),
+      payload: data.text,
     });
   };
 
@@ -197,7 +183,7 @@ const Thread = () => {
       setPostMsg("Please select a category for your post.");
     } else if (!title) {
       setPostMsg("Please enter a title.");
-    } else if (!bodyNode) {
+    } else if (!body) {
       setPostMsg("Please enter a body.");
     } else {
       setPostMsg("");
@@ -205,7 +191,7 @@ const Thread = () => {
         userId,
         categoryId: category?.id,
         title,
-        body: JSON.stringify(bodyNode),
+        body,
       };
       // send to server to save
       const { data: createThreadMsg } = await execCreateThread({
@@ -256,7 +242,7 @@ const Thread = () => {
           />
           <ThreadBody
             body={thread ? thread.body : ""}
-            readOnly={thread ? readOnly : false}
+            readOnly={id ? true : false}
             sendOutBody={receiveBody}
           />
           {thread ? null : (
